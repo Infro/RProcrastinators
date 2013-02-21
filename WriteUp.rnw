@@ -1,0 +1,48 @@
+\documentclass[12pt, a4paper]{exam}
+\title{Analysis of NIAID Funding impact on HIV research.}
+\author{John B Heilman IV \and Diogo Carmo \and 
+Aarti Birdi \and Tara Zepel \and Toli Mikell}
+\include{format}
+\usepackage[OT1]{fontenc}
+\usepackage{Sweave}
+\usepackage{hyperref}
+\SweaveOpts{echo=FALSE, concordance=TRUE, keep.source=FALSE}
+\hypersetup{pdfpagelayout=SinglePage}
+% http://www.tug.org/applications/hyperref/ftp/doc/manual.html
+\setkeys{Gin}{width=0.8\textwidth}
+\pagestyle{headandfoot}
+% every page has a header and footer
+\header{}{Analysis of NIAID Funding impact on HIV research.}{}
+\footer{}{Page \thepage\ of \numpages}{}
+% http://www.r-bloggers.com/sweave-tutorial-1-using-sweave-r-and-make-to-generate-a-pdf-of-multiple-choice-questions/
+
+\begin{document}
+\maketitle
+<<Initialize>>=
+library('lattice')
+x<- rnorm(100)
+y<- rnorm(100) + 0.2*x
+@
+
+Write Up:
+
+<<label=Figure-1-Plot, include=FALSE>>=
+xyplot(y~x, panel=function(x,y,...) {
+    panel.xyplot(x,y,...)
+    panel.abline(lm(y~x))
+})
+@
+\begin{figure}
+\centering
+<<label=Figure-1,fig=TRUE,echo=FALSE>>=
+<<Figure-1-Plot>>
+@
+
+\caption{Scatter Plot with Regression Line}
+\label{fig:two}
+\end{figure}
+\clearpage
+<<Test>>=
+print('hi')
+@
+\end{document}
