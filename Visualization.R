@@ -55,15 +55,21 @@
   }
 }
 
+#Blank Slate
+CleanEnvir <- function(pattern = "tmp") {
+  objs <- ls(pos = ".GlobalEnv")
+  rm(list = objs[grep(pattern, objs)], pos = ".GlobalEnv")
+}
+CleanEnvir("")
 DoISI = F
 DoTestPlot = T
 DoHIV = T
 
 if(DoHIV)
 {
-  d1<-read.table(file='data/raw/25 years of HIVAIDS Research at NIAID/Reduced NIH Grants Table 02.20.13.csv',       sep=",", quote="\"", nrows=100)
-  d2<-read.table(file='data/raw/25 years of HIVAIDS Research at NIAID/Reduced NIH Publications Table 02.20.13.csv', sep=",", quote="\"", nrows=100)
-  d3<-read.table(file='data/raw/25 years of HIVAIDS Research at NIAID/hiv_aids_pubmed_2003-2013.csv',               sep=",", quote="\"", nrows=100)
+  d1<-read.table(file='data/raw/25 years of HIVAIDS Research at NIAID/Reduced NIH Grants Table 02.20.13.csv',       sep=",", quote="\"", nrows=100, header=T)
+  d2<-read.table(file='data/raw/25 years of HIVAIDS Research at NIAID/Reduced NIH Publications Table 02.20.13.csv', sep=",", quote="\"", nrows=100, header=T)
+  d3<-read.table(file='data/raw/25 years of HIVAIDS Research at NIAID/hiv_aids_pubmed_2003-2013.csv',               sep=",", quote="\"", nrows=100, header=T)
 }
 
 if(DoISI)

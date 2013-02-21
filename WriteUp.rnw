@@ -1,7 +1,8 @@
 \documentclass[12pt, a4paper]{exam}
 \title{Analysis of NIAID Funding impact on HIV research.}
-\author{John B Heilman IV \and Diogo Carmo \and 
-Aarti Birdi \and Tara Zepel \and Toli Mikell}
+\author{John B Heilman IV \and Diogo Carmo\inst{1} \and 
+Aarti Birdi \and Tara Zepel\inst{2} \and Toli Mikell}
+\institution{University of Évora \and University of California}
 \include{format}
 \usepackage[OT1]{fontenc}
 \usepackage{Sweave}
@@ -43,6 +44,13 @@ xyplot(y~x, panel=function(x,y,...) {
 \end{figure}
 \clearpage
 <<Test>>=
-print('hi')
+#a <-toBibtex(citation())
+#a[[1]] <- "@Manual{rdct:r,"
+#pckgs<-gsub(".*:","",search())
+#pckgs<-pckgs[-grep("\\..*",pckgs)]
+#sapply(sapply(pckgs, citation),toBibtex)
+#remove(pckgs)
 @
+\Sexpr{R.Version()$version.string}
+\cite{rdct:r}
 \end{document}
