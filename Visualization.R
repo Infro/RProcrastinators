@@ -67,9 +67,26 @@ DoHIV = T
 
 if(DoHIV)
 {
-  d1<-read.table(file='data/raw/25 years of HIVAIDS Research at NIAID/Reduced NIH Grants Table 02.20.13.csv',       sep=",", quote="\"", nrows=100, header=T)
-  d2<-read.table(file='data/raw/25 years of HIVAIDS Research at NIAID/Reduced NIH Publications Table 02.20.13.csv', sep=",", quote="\"", nrows=100, header=T)
-  d3<-read.table(file='data/raw/25 years of HIVAIDS Research at NIAID/hiv_aids_pubmed_2003-2013.csv',               sep=",", quote="\"", nrows=100, header=T)
+  d1<-read.table(file='data/raw/25 years of HIVAIDS Research at NIAID/Reduced NIH Grants Table 02.20.13.csv',       sep=",", quote="\"", header=T, comment.char="", nrows=500)
+  d2<-read.table(file='data/raw/25 years of HIVAIDS Research at NIAID/Reduced NIH Publications Table 02.20.13.csv', sep=",", quote="\"", header=T, comment.char="", nrows=500)
+  d3<-read.table(file='data/raw/25 years of HIVAIDS Research at NIAID/hiv_aids_pubmed_2003-2013.csv',               sep=",", quote="\"", header=T, comment.char="", nrows=500)
+  #d4<-read.table(file='data/raw/25 years of HIVAIDS Research at NIAID/HIV_AIDS_from_pubmed_1989-2013.csv',          sep=",", quote="\"", header=T, comment.char="", nrows=500)
+  
+  d1<-read.table(colClasses=sapply(d1[1,],class), file='data/raw/25 years of HIVAIDS Research at NIAID/Reduced NIH Grants Table 02.20.13.csv',       sep=",", quote="\"", header=T, comment.char="", strip.white=T)
+  d2<-read.table(colClasses=sapply(d2[1,],class), file='data/raw/25 years of HIVAIDS Research at NIAID/Reduced NIH Publications Table 02.20.13.csv', sep=",", quote="\"", header=T, comment.char="", strip.white=T)
+  d3<-read.table(colClasses=sapply(d3[1,],class), file='data/raw/25 years of HIVAIDS Research at NIAID/hiv_aids_pubmed_2003-2013.csv',               sep=",", quote="\"", header=T, comment.char="", strip.white=T)
+  #d4<-read.table(colClasses=sapply(d4[1,],class), file='data/raw/25 years of HIVAIDS Research at NIAID/HIV_AIDS_from_pubmed_1989-2013.csv',          sep=",", quote="\"", header=T, comment.char="", strip.white=T)
+  d4<-read.table(                                file='data/raw/25 years of HIVAIDS Research at NIAID/HIV_AIDS_from_pubmed_1989-2013.csv',          sep=",", quote="\"", header=T, comment.char="", strip.white=T)
+  d4$PubMed.ID<-gsub(pattern="PMID:", replacement="", x=d4$PubMed.ID)
+  d4$PubMed.ID<-as.numeric(d4$PubMed.ID)
+  write.table(d4$Journal  , row.names = F, col.names = F, file="data/processed/journalList.csv")
+  write.table(d4$PubMed.ID, row.names = F, col.names = F, file="data/processed/journalList2.csv")
+  library("movMF")
+  library("tm")
+  
+  combined <- apply(X=d3[,c("Source", "Publication.Title")], MARGIN=1, FUN=function(x) {paste(x[1],x[2])})
+  wordCorpus <- Corpus(VectorSource(combined))
+  dtm <- DocumentTermMatrix(x=wordCorpus, control=list(tokenize="MC", stopwords=T, wordLengths=c(3,Inf), stemming=T))
 }
 
 if(DoISI)

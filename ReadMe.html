@@ -147,7 +147,33 @@ hr {
 <body>
 <h1>Visualization, Data Analysis, and Interaction Discussion</h1>
 
+<h1>Clustering Methods</h1>
+
+<ul>
+<li>Lantent Semantic Analysis</li>
+<li>Positive Pointwise Mutual Information</li>
+<li>WordNet/MeSH</li>
+</ul>
+
+<h2>Custom</h2>
+
+<ul>
+<li>Get AverageArcLength</li>
+<li>BeginRepeat</li>
+<li>Take Smallest Arc</li>
+<li>Place Point in middle of arc called NewCenter</li>
+<li>Calculate Distance of all Points to the NewCenter and remove if Distance &lt; (Threshold * AverageArcLength) </li>
+<li>If Arcs Removed &gt; Threshold2 GoTo BeginRepeat</li>
+<li>Preform K-Means Clustering</li>
+</ul>
+
 <h2>Speedups</h2>
+
+<h3>Best Bet</h3>
+
+<ul>
+<li><a href="http://www.indiana.edu/%7Eclcl/Papers/BSC901.pdf">http://www.indiana.edu/~clcl/Papers/BSC901.pdf</a></li>
+</ul>
 
 <h3>Ways to minimize the vocabulary.</h3>
 
@@ -162,34 +188,127 @@ hr {
 
 <p>W is all words in all documents
 V is set of all works in all documents
-D is set of all documents
-1. For each Document, create a list of words and their count.</p>
+D is set of all documents</p>
 
 <ul>
-<li>Dictionary<int,List<KeyValuePair<string,int>&gt; Documents;
+<li>For each Document, create a list of words and their count.
 
-<ol>
-<li>For each Word, create a list of Documents and their count.</li>
-</ol></li>
-<li>Dictionary<string,Dictionary<int,int>&gt; Words
+<ul>
+<li>Dictionary<int,List<KeyValuePair<string,int>&gt; Documents;</li>
+</ul></li>
+<li>For each Word, create a list of Documents and their count.
 
-<ol>
-<li>Space for each Word would be</li>
-</ol></li>
-<li>P(W|D) * N(D)
+<ul>
+<li>Dictionary<string,Dictionary<int,int>&gt; Words</li>
+</ul></li>
+<li>Space for each Word would be
 
-<ol>
-<li>Space for each Document would be</li>
-</ol></li>
+<ul>
+<li>P(W|D) * N(D)</li>
+</ul></li>
+<li>Space for each Document would be
+
+<ul>
 <li>P(W|D) * N(W|D)</li>
+</ul></li>
 </ul>
 
 <h4>Sparse vs Normal Matrix:</h4>
 
 <p>Number of unique words in document * number of documents
-\[ \sum_w^V{[P(w|\overline{D}) * N(D)]} + P(w \in V|D) * N(W|D) vs N(W)*N(D) \]</p>
+\[ \sum_w^V{[P(w|\overline{D}) * N(D)]} + P(w \in D) * N(W|D) * N(D) vs N(W)*N(D) \]</p>
 
-<p>###Contact for the Fast PMI Network: : FLAG</p>
+<h2>Improved Sparse Matrix</h2>
+
+<pre><code>Dictionary&lt;int, Dictionary&lt;string,int&gt;&gt; Documents;
+Dictionary&lt;int, Dictionary&lt;string,double&gt;&gt; PPMI;
+Dictionary&lt;int, int&gt; DocumentWordCounts;
+//Dictionary&lt;string, int&gt; WordCounts;
+HashSet Vocabulary;
+int WordCount;
+int UniqueWordCount;
+int DocumentCount;
+
+UniqueWordCount = Vocabulary.Count;
+DocumentCount = Documents.Count;
+while(Documents.Count &gt; 0)
+{
+  KeyValuePair&lt;int,Dictionary&lt;string,int&gt;&gt; doc = Documents.First();
+  while(doc.Value.Count &gt; 0)
+  {
+    Dictionary&lt;string,int&gt; dic = doc.Values.First();
+    //foreach(string word in Vocabulary)
+    foreach(string word in dic.Keys)
+    {
+      List&lt;int&gt; DocumentsContainingWord = Documents.Where(o=&gt;o.Value.ContainsKey(word)).Select(o=&gt;o.Key).AsList();
+      int WordCount2 = 0;
+      foreach(int doc2 in DocumentsContainingWord)
+        WordCount2 += Documents[doc2][word];
+      foreach(int doc2 in DocumentsContainingWord)
+      {
+        double P_of_w_given_d = ((double)(Documents[doc2][word] + DirichletSmoothAmmount) / (double)(UniqueWordCount*DirichletSmoothAmmount + DocumentWordCount[doc2]));
+        double P_of_w = ((double)(/*WordCounts[word]*/ WordCount2 + DirichletSmoothAmmount)/(double)(WordCount+DirichletSmoothAmmount*UniqueWordCount*DocumentCount)) 
+        int MI =  P_of_w_given_d/P_of_w;
+        PMI = log2(MI);
+        if(PMI &gt;= PostiveThreshold)
+        {
+          PPMI[doc2].Add(word, PMI)
+          if(PPMI[doc2]==null)
+            PPMI.add(doc2, new Dictionary&lt;string,int&gt;());
+        }
+        Documents[doc2].RemoveKey(word);
+        if(Documents[doc2].Count == 0)
+          Documents.RemoveKey(doc2)
+        //PPMI = max(P(W|C)/P(W),PostiveThreshold)
+      }
+    }
+  }
+}
+</code></pre>
+
+<pre><code>Dictionary&lt;int, Dictionary&lt;string,int&gt;&gt; Documents;
+Dictionary&lt;int, Dictionary&lt;string,double&gt;&gt; PPMI;
+Dictionary&lt;int, int&gt; DocumentWordCounts;
+//Dictionary&lt;string, int&gt; WordCounts;
+HashSet Vocabulary;
+int WordCount;
+int UniqueWordCount;
+int DocumentCount;
+
+UniqueWordCount = Vocabulary.Count;
+DocumentCount = Documents.Count;
+foreach(string word in Vocabulary)
+{
+  List&lt;int&gt; DocumentsContainingWord = Documents.Where(o=&gt;o.Value.ContainsKey(word)).Select(o=&gt;o.Key).AsList();
+  int WordCount2 = 0;
+  foreach(int doc2 in DocumentsContainingWord)
+    WordCount2 += Documents[doc2][word];
+  foreach(int doc2 in DocumentsContainingWord)
+  {
+    double P_of_w_given_d = ((double)(Documents[doc2][word] + DirichletSmoothAmmount) / (double)(UniqueWordCount*DirichletSmoothAmmount + DocumentWordCount[doc2]));
+        double P_of_w = ((double)(/*WordCounts[word]*/ WordCount2 + DirichletSmoothAmmount)/(double)(WordCount+DirichletSmoothAmmount*UniqueWordCount*DocumentCount)) 
+    int MI =  P_of_w_given_d/P_of_w;
+    PMI = log2(MI);
+    if(PMI &gt;= PostiveThreshold)
+    {
+      if(PPMI[doc2]==null)
+        PPMI.add(doc2, new Dictionary&lt;string,int&gt;());
+      PPMI[doc2].Add(word, PMI)
+    }
+    //PPMI = max(P(W|C)/P(W),PostiveThreshold)
+  }
+}
+</code></pre>
+
+<p>Cosine Similarity</p>
+
+<pre><code>CosineSimilarity(int doc1, int doc2)
+{
+  PPMI[doc1]
+}
+</code></pre>
+
+<h3>Contact for the Fast PMI Network: : FLAG</h3>
 
 <ul>
 <li><a href="mailto:amit@umiacs.umd.edu">amit@umiacs.umd.edu</a></li>

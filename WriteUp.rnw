@@ -1,24 +1,39 @@
-\documentclass[12pt, a4paper]{exam}
-\title{Analysis of NIAID Funding impact on HIV research.}
-\author{John B Heilman IV \and Diogo Carmo\inst{1} \and 
-Aarti Birdi \and Tara Zepel\inst{2} \and Toli Mikell}
-\institution{University of Évora \and University of California}
+\documentclass[12pt, a4paper]{article}
 \include{format}
-\usepackage[OT1]{fontenc}
+%256 ASCII SUPPORT
+\usepackage[T1]{fontenc}
+%http://cns.bu.edu/~bret/tricks/latex/headFoot.php
+\usepackage{fancyhdr}
+\pagestyle{fancy}
 \usepackage{Sweave}
-\usepackage{hyperref}
 \SweaveOpts{echo=FALSE, concordance=TRUE, keep.source=FALSE}
-\hypersetup{pdfpagelayout=SinglePage}
 % http://www.tug.org/applications/hyperref/ftp/doc/manual.html
+\usepackage{hyperref}
+\hypersetup{pdfpagelayout=SinglePage}
 \setkeys{Gin}{width=0.8\textwidth}
-\pagestyle{headandfoot}
-% every page has a header and footer
-\header{}{Analysis of NIAID Funding impact on HIV research.}{}
-\footer{}{Page \thepage\ of \numpages}{}
-% http://www.r-bloggers.com/sweave-tutorial-1-using-sweave-r-and-make-to-generate-a-pdf-of-multiple-choice-questions/
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%Fancy Title Header and Footer%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{Analysis of NIAID Funding impact on HIV research.}
+\author{John B Heilman IV}
+\author{Diogo Carmo}
+\author{Aarti Birdi}
+\author{Tara Zepel}
+\author{Toli Mikell}
+\date{\today}
 
+\setlength{\headheight}{16pt}
+\lfoot{Version 0.1}
+\cfoot{Page \thepage of \numpages}
+\rfoot{\copyright \the\year}
+\lhead{}
+\chead{Analysis of NIAID Funding impact on HIV research.}
+\rhead{}
+
+% http://www.r-bloggers.com/sweave-tutorial-1-using-sweave-r-and-make-to-generate-a-pdf-of-multiple-choice-questions/
 \begin{document}
 \maketitle
+
 <<Initialize>>=
 library('lattice')
 x<- rnorm(100)
@@ -51,6 +66,6 @@ xyplot(y~x, panel=function(x,y,...) {
 #sapply(sapply(pckgs, citation),toBibtex)
 #remove(pckgs)
 @
-\Sexpr{R.Version()$version.string}
-\cite{rdct:r}
+%\Sexpr{R.Version()$version.string}
+%\cite{rdct:r}
 \end{document}
